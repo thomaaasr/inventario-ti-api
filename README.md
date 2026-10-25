@@ -7,7 +7,7 @@ está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScri
 
 ## Funcionalidades planejadas
 
-- [ ] Cadastro de equipamentos (cadastrar, listar, editar e excluir)
+- [x] Cadastro de equipamentos (cadastrar, listar, editar e excluir)
 - [ ] Validação dos dados recebidos
 - [ ] Armazenamento em banco de dados
 - [ ] Testes automatizados e documentação interativa (Swagger)
