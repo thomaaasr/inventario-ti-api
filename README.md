@@ -24,6 +24,9 @@ npm run start:dev
 
 A API sobe em `http://localhost:3000`.
 
+A documentação interativa (Swagger) fica em `http://localhost:3000/docs`: lá dá para
+ver todas as rotas, exemplos e erros possíveis, e testar cada uma pelo navegador.
+
 ## Testes
 
 ```bash
@@ -32,4 +35,4 @@ npm test
 
 ## Tecnologias
 
-`TypeScript` `Node.js` `NestJS` `TypeORM` `SQLite` `Vitest`
+`TypeScript` `Node.js` `NestJS` `TypeORM` `SQLite` `Vitest` `Swagger`
