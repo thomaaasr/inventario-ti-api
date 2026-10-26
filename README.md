@@ -10,7 +10,7 @@ está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScri
 - [x] Cadastro de equipamentos (cadastrar, listar, editar e excluir)
 - [x] Validação dos dados recebidos
 - [x] Armazenamento em banco de dados
-- [ ] Testes automatizados e documentação interativa (Swagger)
+- [x] Testes automatizados e documentação interativa (Swagger)
 - [ ] Empréstimos: quem está com cada equipamento e o histórico de devoluções
 
 ## Como rodar
