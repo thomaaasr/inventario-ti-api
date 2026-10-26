@@ -1,4 +1,5 @@
-export type StatusEquipamento = 'disponivel' | 'emprestado' | 'manutencao';
+export const STATUS_EQUIPAMENTO = ['disponivel', 'emprestado', 'manutencao'] as const;
+export type StatusEquipamento = (typeof STATUS_EQUIPAMENTO)[number];
 
 export class Equipamento {
   id: number;
