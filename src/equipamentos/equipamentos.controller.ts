@@ -29,7 +29,7 @@ export class EquipamentosController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    this.equipamentosService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.equipamentosService.remove(id);
   }
 }

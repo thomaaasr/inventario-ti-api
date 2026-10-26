@@ -9,7 +9,7 @@ está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScri
 
 - [x] Cadastro de equipamentos (cadastrar, listar, editar e excluir)
 - [x] Validação dos dados recebidos
-- [ ] Armazenamento em banco de dados
+- [x] Armazenamento em banco de dados
 - [ ] Testes automatizados e documentação interativa (Swagger)
 - [ ] Empréstimos: quem está com cada equipamento e o histórico de devoluções
 
@@ -32,4 +32,4 @@ npm test
 
 ## Tecnologias
 
-`TypeScript` `Node.js` `NestJS` `Vitest`
+`TypeScript` `Node.js` `NestJS` `TypeORM` `SQLite` `Vitest`

@@ -1,44 +1,52 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateEquipamentoDto } from './dto/create-equipamento.dto.js';
 import { UpdateEquipamentoDto } from './dto/update-equipamento.dto.js';
 import { Equipamento } from './entities/equipamento.entity.js';
 
 @Injectable()
 export class EquipamentosService {
-  // Por enquanto os dados ficam na memória: somem quando a API reinicia.
-  private equipamentos: Equipamento[] = [];
-  private proximoId = 1;
+  constructor(
+    @InjectRepository(Equipamento)
+    private readonly equipamentos: Repository<Equipamento>,
+  ) {}
 
-  create(createEquipamentoDto: CreateEquipamentoDto): Equipamento {
-    const equipamento: Equipamento = {
-      id: this.proximoId++,
-      ...createEquipamentoDto,
-      status: 'disponivel',
-    };
-    this.equipamentos.push(equipamento);
-    return equipamento;
+  async create(createEquipamentoDto: CreateEquipamentoDto): Promise<Equipamento> {
+    await this.garantirNumeroSerieLivre(createEquipamentoDto.numeroSerie);
+    const equipamento = this.equipamentos.create(createEquipamentoDto);
+    return this.equipamentos.save(equipamento);
   }
 
-  findAll(): Equipamento[] {
-    return this.equipamentos;
+  findAll(): Promise<Equipamento[]> {
+    return this.equipamentos.find();
   }
 
-  findOne(id: number): Equipamento {
-    const equipamento = this.equipamentos.find((e) => e.id === id);
+  async findOne(id: number): Promise<Equipamento> {
+    const equipamento = await this.equipamentos.findOneBy({ id });
     if (!equipamento) {
       throw new NotFoundException(`Equipamento ${id} não encontrado.`);
     }
     return equipamento;
   }
 
-  update(id: number, updateEquipamentoDto: UpdateEquipamentoDto): Equipamento {
-    const equipamento = this.findOne(id);
+  async update(id: number, updateEquipamentoDto: UpdateEquipamentoDto): Promise<Equipamento> {
+    const equipamento = await this.findOne(id);
+    if (updateEquipamentoDto.numeroSerie && updateEquipamentoDto.numeroSerie !== equipamento.numeroSerie) {
+      await this.garantirNumeroSerieLivre(updateEquipamentoDto.numeroSerie);
+    }
     Object.assign(equipamento, updateEquipamentoDto);
-    return equipamento;
+    return this.equipamentos.save(equipamento);
   }
 
-  remove(id: number): void {
-    this.findOne(id);
-    this.equipamentos = this.equipamentos.filter((e) => e.id !== id);
+  async remove(id: number): Promise<void> {
+    const equipamento = await this.findOne(id);
+    await this.equipamentos.remove(equipamento);
+  }
+
+  private async garantirNumeroSerieLivre(numeroSerie: string): Promise<void> {
+    if (await this.equipamentos.existsBy({ numeroSerie })) {
+      throw new ConflictException(`Já existe um equipamento com o número de série ${numeroSerie}.`);
+    }
   }
 }
