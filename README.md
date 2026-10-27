@@ -3,15 +3,21 @@
 API REST para controlar os equipamentos de TI de uma empresa: o que existe, com quem
 está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScript**.
 
-> 🚧 Projeto em desenvolvimento, construído em etapas. Acompanhe o progresso abaixo.
+## Regras de negócio
 
-## Funcionalidades planejadas
+- Todo equipamento começa **disponível**, e o número de série não pode se repetir
+- Só é possível emprestar um equipamento **disponível**; a devolução o libera
+- O status **emprestado** só muda por empréstimo e devolução, nunca à mão
+- Equipamentos com histórico de empréstimos não podem ser excluídos
+- Empréstimo e mudança de status são gravados numa **transação**: ou os dois, ou nenhum
+
+## Funcionalidades
 
 - [x] Cadastro de equipamentos (cadastrar, listar, editar e excluir)
 - [x] Validação dos dados recebidos
 - [x] Armazenamento em banco de dados
 - [x] Testes automatizados e documentação interativa (Swagger)
-- [ ] Empréstimos: quem está com cada equipamento e o histórico de devoluções
+- [x] Empréstimos: quem está com cada equipamento e o histórico de devoluções
 
 ## Como rodar
 
