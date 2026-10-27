@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EquipamentosService } from './equipamentos.service.js';
 import { Equipamento } from './entities/equipamento.entity.js';
+import { Emprestimo } from '../emprestimos/entities/emprestimo.entity.js';
 
 // Dublê do repositório: imita o banco sem precisar de um banco de verdade.
 function criarRepositorioFalso() {
@@ -28,11 +29,17 @@ const notebook: Equipamento = {
 describe('EquipamentosService', () => {
   let service: EquipamentosService;
   let repositorio: ReturnType<typeof criarRepositorioFalso>;
+  let emprestimos: { existsBy: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     repositorio = criarRepositorioFalso();
+    emprestimos = { existsBy: vi.fn().mockResolvedValue(false) };
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EquipamentosService, { provide: getRepositoryToken(Equipamento), useValue: repositorio }],
+      providers: [
+        EquipamentosService,
+        { provide: getRepositoryToken(Equipamento), useValue: repositorio },
+        { provide: getRepositoryToken(Emprestimo), useValue: emprestimos },
+      ],
     }).compile();
 
     service = module.get<EquipamentosService>(EquipamentosService);
@@ -77,9 +84,9 @@ describe('EquipamentosService', () => {
     it('altera só os campos enviados', async () => {
       repositorio.findOneBy.mockResolvedValue({ ...notebook });
 
-      const resultado = await service.update(1, { status: 'emprestado' });
+      const resultado = await service.update(1, { status: 'manutencao' });
 
-      expect(resultado).toEqual({ ...notebook, status: 'emprestado' });
+      expect(resultado).toEqual({ ...notebook, status: 'manutencao' });
       expect(repositorio.existsBy).not.toHaveBeenCalled();
     });
 
@@ -88,6 +95,13 @@ describe('EquipamentosService', () => {
       repositorio.existsBy.mockResolvedValue(true);
 
       await expect(service.update(1, { numeroSerie: 'XYZ789' })).rejects.toThrow(ConflictException);
+      expect(repositorio.save).not.toHaveBeenCalled();
+    });
+
+    it('recusa mudar o status de um equipamento emprestado', async () => {
+      repositorio.findOneBy.mockResolvedValue({ ...notebook, status: 'emprestado' });
+
+      await expect(service.update(1, { status: 'disponivel' })).rejects.toThrow(ConflictException);
       expect(repositorio.save).not.toHaveBeenCalled();
     });
   });
@@ -105,6 +119,14 @@ describe('EquipamentosService', () => {
       repositorio.findOneBy.mockResolvedValue(null);
 
       await expect(service.remove(99)).rejects.toThrow(NotFoundException);
+      expect(repositorio.remove).not.toHaveBeenCalled();
+    });
+
+    it('recusa excluir um equipamento com histórico de empréstimos', async () => {
+      repositorio.findOneBy.mockResolvedValue(notebook);
+      emprestimos.existsBy.mockResolvedValue(true);
+
+      await expect(service.remove(1)).rejects.toThrow(ConflictException);
       expect(repositorio.remove).not.toHaveBeenCalled();
     });
   });

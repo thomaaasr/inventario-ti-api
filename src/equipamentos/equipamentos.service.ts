@@ -4,12 +4,15 @@ import { Repository } from 'typeorm';
 import { CreateEquipamentoDto } from './dto/create-equipamento.dto.js';
 import { UpdateEquipamentoDto } from './dto/update-equipamento.dto.js';
 import { Equipamento } from './entities/equipamento.entity.js';
+import { Emprestimo } from '../emprestimos/entities/emprestimo.entity.js';
 
 @Injectable()
 export class EquipamentosService {
   constructor(
     @InjectRepository(Equipamento)
     private readonly equipamentos: Repository<Equipamento>,
+    @InjectRepository(Emprestimo)
+    private readonly emprestimos: Repository<Emprestimo>,
   ) {}
 
   async create(createEquipamentoDto: CreateEquipamentoDto): Promise<Equipamento> {
@@ -32,6 +35,11 @@ export class EquipamentosService {
 
   async update(id: number, updateEquipamentoDto: UpdateEquipamentoDto): Promise<Equipamento> {
     const equipamento = await this.findOne(id);
+    if (updateEquipamentoDto.status && equipamento.status === 'emprestado') {
+      throw new ConflictException(
+        `O equipamento ${id} está emprestado. Registre a devolução em PATCH /emprestimos/{id}/devolucao.`,
+      );
+    }
     if (updateEquipamentoDto.numeroSerie && updateEquipamentoDto.numeroSerie !== equipamento.numeroSerie) {
       await this.garantirNumeroSerieLivre(updateEquipamentoDto.numeroSerie);
     }
@@ -41,6 +49,11 @@ export class EquipamentosService {
 
   async remove(id: number): Promise<void> {
     const equipamento = await this.findOne(id);
+    if (await this.emprestimos.existsBy({ equipamento: { id } })) {
+      throw new ConflictException(
+        `O equipamento ${id} tem histórico de empréstimos e não pode ser excluído, para não apagar o histórico.`,
+      );
+    }
     await this.equipamentos.remove(equipamento);
   }
 
