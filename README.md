@@ -39,6 +39,24 @@ ver todas as rotas, exemplos e erros possíveis, e testar cada uma pelo navegado
 npm test
 ```
 
+## Banco de dados
+
+O banco (SQLite) fica em `data/inventario.sqlite` e é criado na primeira vez que a API sobe.
+As tabelas são criadas e alteradas por **migrações** (`src/database/migrations`), aplicadas
+automaticamente ao iniciar a API.
+
+Depois de alterar uma entity, gere a migração com as diferenças e confira o arquivo gerado:
+
+```bash
+npm run migration:generate -- src/database/migrations/NomeDaMudanca
+```
+
+Para desfazer a última migração aplicada:
+
+```bash
+npm run migration:revert
+```
+
 ## Tecnologias
 
 `TypeScript` `Node.js` `NestJS` `TypeORM` `SQLite` `Vitest` `Swagger`

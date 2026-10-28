@@ -2,19 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { opcoesBanco } from './database/data-source.js';
 import { EquipamentosModule } from './equipamentos/equipamentos.module.js';
 import { EmprestimosModule } from './emprestimos/emprestimos.module.js';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: 'data/inventario.sqlite',
-      autoLoadEntities: true,
-      // Cria e ajusta as tabelas a partir das entities. Prático no desenvolvimento,
-      // mas perigoso em produção: pode apagar dados ao mudar uma coluna.
-      synchronize: true,
-    }),
+    // As tabelas são criadas e alteradas pelas migrações (src/database/migrations),
+    // aplicadas automaticamente quando a API sobe.
+    TypeOrmModule.forRoot({ ...opcoesBanco, migrationsRun: true }),
     EquipamentosModule,
     EmprestimosModule,
   ],
