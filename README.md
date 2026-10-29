@@ -5,6 +5,14 @@
 API REST para controlar os equipamentos de TI de uma empresa: o que existe, com quem
 está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScript**.
 
+## Demonstração online
+
+Teste a API pelo navegador: **[inventario-ti-api-car8.onrender.com/docs](https://inventario-ti-api-car8.onrender.com/docs)**
+
+> Hospedada no plano gratuito do Render: depois de 15 minutos sem uso a API "dorme", e o
+> primeiro acesso pode levar cerca de 1 minuto. Os dados são de demonstração e são apagados
+> a cada reinício.
+
 ## Regras de negócio
 
 - Todo equipamento começa **disponível**, e o número de série não pode se repetir
