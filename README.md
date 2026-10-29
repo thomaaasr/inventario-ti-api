@@ -1,5 +1,7 @@
 # Inventário de TI — API
 
+[![CI](https://github.com/thomaaasr/inventario-ti-api/actions/workflows/ci.yml/badge.svg)](https://github.com/thomaaasr/inventario-ti-api/actions/workflows/ci.yml)
+
 API REST para controlar os equipamentos de TI de uma empresa: o que existe, com quem
 está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScript**.
 
