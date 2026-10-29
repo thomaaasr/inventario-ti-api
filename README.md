@@ -18,6 +18,7 @@ está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScri
 - [x] Armazenamento em banco de dados
 - [x] Testes automatizados e documentação interativa (Swagger)
 - [x] Empréstimos: quem está com cada equipamento e o histórico de devoluções
+- [x] Migrações de banco de dados e testes de ponta a ponta (e2e)
 
 ## Como rodar
 
@@ -36,7 +37,8 @@ ver todas as rotas, exemplos e erros possíveis, e testar cada uma pelo navegado
 ## Testes
 
 ```bash
-npm test
+npm test           # testes unitários: cada service isolado, com o banco simulado
+npm run test:e2e   # testes de ponta a ponta: a API inteira, com um banco em memória
 ```
 
 ## Banco de dados
@@ -50,6 +52,7 @@ Depois de alterar uma entity, gere a migração com as diferenças e confira o a
 ```bash
 npm run migration:generate -- src/database/migrations/NomeDaMudanca
 ```
+Em seguida, registre a migração nova na lista `migrations` de `src/database/data-source.ts`.
 
 Para desfazer a última migração aplicada:
 

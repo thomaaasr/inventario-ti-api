@@ -6,5 +6,7 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['**/*.e2e-spec.ts'],
+    // Banco em memória: cada teste começa vazio e o arquivo de verdade não é tocado.
+    env: { DB_PATH: ':memory:' },
   },
 });
