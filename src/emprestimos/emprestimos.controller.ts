@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -8,12 +9,16 @@ import {
   ApiOperation,
   ApiQuery,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Publico } from '../auth/publico.decorator.js';
 import { CreateEmprestimoDto } from './dto/create-emprestimo.dto.js';
 import { Emprestimo } from './entities/emprestimo.entity.js';
 import { EmprestimosService } from './emprestimos.service.js';
 
 @ApiTags('Empréstimos')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Sem login ou token inválido' })
 @Controller('emprestimos')
 export class EmprestimosController {
   constructor(private readonly emprestimosService: EmprestimosService) {}
@@ -28,6 +33,7 @@ export class EmprestimosController {
     return this.emprestimosService.emprestar(createEmprestimoDto);
   }
 
+  @Publico()
   @Get()
   @ApiOperation({ summary: 'Lista os empréstimos, do mais recente ao mais antigo' })
   @ApiQuery({ name: 'equipamentoId', required: false, description: 'Mostra só o histórico deste equipamento' })
@@ -36,6 +42,7 @@ export class EmprestimosController {
     return this.emprestimosService.findAll(equipamentoId);
   }
 
+  @Publico()
   @Get(':id')
   @ApiOperation({ summary: 'Mostra um empréstimo' })
   @ApiOkResponse({ type: Emprestimo })

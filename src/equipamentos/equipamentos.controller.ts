@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -8,13 +9,17 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Publico } from '../auth/publico.decorator.js';
 import { EquipamentosService } from './equipamentos.service.js';
 import { CreateEquipamentoDto } from './dto/create-equipamento.dto.js';
 import { UpdateEquipamentoDto } from './dto/update-equipamento.dto.js';
 import { Equipamento } from './entities/equipamento.entity.js';
 
 @ApiTags('Equipamentos')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Sem login ou token inválido' })
 @Controller('equipamentos')
 export class EquipamentosController {
   constructor(private readonly equipamentosService: EquipamentosService) {}
@@ -28,6 +33,7 @@ export class EquipamentosController {
     return this.equipamentosService.create(createEquipamentoDto);
   }
 
+  @Publico()
   @Get()
   @ApiOperation({ summary: 'Lista todos os equipamentos' })
   @ApiOkResponse({ type: [Equipamento] })
@@ -35,6 +41,7 @@ export class EquipamentosController {
     return this.equipamentosService.findAll();
   }
 
+  @Publico()
   @Get(':id')
   @ApiOperation({ summary: 'Mostra um equipamento' })
   @ApiOkResponse({ type: Equipamento })

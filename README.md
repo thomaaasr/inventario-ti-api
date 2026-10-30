@@ -13,6 +13,9 @@ Teste a API pelo navegador: **[inventario-ti-api-car8.onrender.com/docs](https:/
 > primeiro acesso pode levar cerca de 1 minuto. Os dados são de demonstração e são apagados
 > a cada reinício.
 
+Para cadastrar, editar ou emprestar, crie um usuário em `POST /auth/registro`, faça login em
+`POST /auth/login` e cole o `accessToken` no botão **Authorize** do Swagger. As consultas são abertas.
+
 ## Regras de negócio
 
 - Todo equipamento começa **disponível**, e o número de série não pode se repetir
@@ -20,6 +23,8 @@ Teste a API pelo navegador: **[inventario-ti-api-car8.onrender.com/docs](https:/
 - O status **emprestado** só muda por empréstimo e devolução, nunca à mão
 - Equipamentos com histórico de empréstimos não podem ser excluídos
 - Empréstimo e mudança de status são gravados numa **transação**: ou os dois, ou nenhum
+- Consultar é livre; cadastrar, editar, excluir, emprestar e devolver exigem login (token JWT)
+- Senhas são guardadas apenas como hash (bcrypt), nunca em texto puro
 
 ## Funcionalidades
 
@@ -29,6 +34,7 @@ Teste a API pelo navegador: **[inventario-ti-api-car8.onrender.com/docs](https:/
 - [x] Testes automatizados e documentação interativa (Swagger)
 - [x] Empréstimos: quem está com cada equipamento e o histórico de devoluções
 - [x] Migrações de banco de dados e testes de ponta a ponta (e2e)
+- [x] Autenticação com JWT: registro, login e rotas protegidas
 
 ## Como rodar
 
@@ -36,6 +42,7 @@ Pré-requisito: [Node.js](https://nodejs.org) 24.15 ou superior.
 
 ```bash
 npm install
+cp .env.example .env   # depois troque o JWT_SECRET por um texto longo e aleatório
 npm run start:dev
 ```
 
@@ -72,4 +79,4 @@ npm run migration:revert
 
 ## Tecnologias
 
-`TypeScript` `Node.js` `NestJS` `TypeORM` `SQLite` `Vitest` `Swagger`
+`TypeScript` `Node.js` `NestJS` `TypeORM` `SQLite` `Vitest` `Swagger` `JWT`
