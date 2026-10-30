@@ -16,7 +16,7 @@ function criarManagerFalso() {
 }
 
 function criarNotebook(status: StatusEquipamento = 'disponivel'): Equipamento {
-    return { id: 1, tipo: 'Notebook', marca: 'Dell', modelo: 'Latitude 5440', numeroSerie: 'ABC123', status, };
+  return { id: 1, tipo: 'Notebook', marca: 'Dell', modelo: 'Latitude 5440', numeroSerie: 'ABC123', status };
 }
 
 describe('EmprestimosService', () => {

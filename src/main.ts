@@ -13,7 +13,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
   configurarApp(app);
-  
+
   const config = new DocumentBuilder()
     .setTitle('Inventário de TI')
     .setDescription('API para controlar os equipamentos de TI: o que existe e com quem está.')

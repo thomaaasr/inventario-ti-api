@@ -46,9 +46,9 @@ describe('AuthService', () => {
     it('recusa e-mail repetido com 409', async () => {
       usuarios.existsBy.mockResolvedValue(true);
 
-      await expect(
-        service.registrar({ email: 'maria@exemplo.com', senha: 'senha-forte-123' }),
-      ).rejects.toThrow(ConflictException);
+      await expect(service.registrar({ email: 'maria@exemplo.com', senha: 'senha-forte-123' })).rejects.toThrow(
+        ConflictException,
+      );
       expect(usuarios.save).not.toHaveBeenCalled();
     });
   });
@@ -58,26 +58,26 @@ describe('AuthService', () => {
       const senhaHash = await bcrypt.hash('senha-forte-123', 4);
       usuarios.findOneBy.mockResolvedValue({ id: 1, email: 'maria@exemplo.com', senhaHash });
 
-      await expect(
-        service.login({ email: 'maria@exemplo.com', senha: 'senha-forte-123' }),
-      ).resolves.toEqual({ accessToken: 'token-de-teste' });
+      await expect(service.login({ email: 'maria@exemplo.com', senha: 'senha-forte-123' })).resolves.toEqual({
+        accessToken: 'token-de-teste',
+      });
     });
 
     it('recusa senha errada com 401', async () => {
       const senhaHash = await bcrypt.hash('senha-forte-123', 4);
       usuarios.findOneBy.mockResolvedValue({ id: 1, email: 'maria@exemplo.com', senhaHash });
 
-      await expect(
-        service.login({ email: 'maria@exemplo.com', senha: 'senha-errada-123' }),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ email: 'maria@exemplo.com', senha: 'senha-errada-123' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('recusa e-mail que não existe com 401', async () => {
       usuarios.findOneBy.mockResolvedValue(null);
 
-      await expect(
-        service.login({ email: 'ninguem@exemplo.com', senha: 'qualquer-senha' }),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ email: 'ninguem@exemplo.com', senha: 'qualquer-senha' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

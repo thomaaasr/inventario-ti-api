@@ -72,7 +72,7 @@ describe('EquipamentosService', () => {
     });
   });
 
-    describe('findAll', () => {
+  describe('findAll', () => {
     it('busca só a página pedida, com os filtros enviados', async () => {
       repositorio.findAndCount.mockResolvedValue([[notebook], 11]);
 

@@ -77,7 +77,7 @@ describe('Inventário (e2e)', () => {
     expect(equipamento.body.status).toBe('disponivel');
   });
 
-    describe('listagem', () => {
+  describe('listagem', () => {
     async function cadastrar(numeroSerie: string, tipo = 'Notebook') {
       await request(app.getHttpServer())
         .post('/equipamentos')

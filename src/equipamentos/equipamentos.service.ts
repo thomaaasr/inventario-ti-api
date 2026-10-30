@@ -41,7 +41,7 @@ export class EquipamentosService {
     });
     return { itens, total, pagina, limite };
   }
-  
+
   async findOne(id: number): Promise<Equipamento> {
     const equipamento = await this.equipamentos.findOneBy({ id });
     if (!equipamento) {

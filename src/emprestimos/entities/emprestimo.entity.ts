@@ -20,7 +20,12 @@ export class Emprestimo {
   @CreateDateColumn()
   dataEmprestimo: Date;
 
-  @ApiProperty({ example: null, type: Date, nullable: true, description: 'Vazio enquanto o equipamento não for devolvido' })
+  @ApiProperty({
+    example: null,
+    type: Date,
+    nullable: true,
+    description: 'Vazio enquanto o equipamento não for devolvido',
+  })
   @Column({ type: 'datetime', nullable: true })
   dataDevolucao: Date | null;
 }
