@@ -2,7 +2,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EquipamentosService } from './equipamentos.service.js';
-import { Equipamento } from './entities/equipamento.entity.js';
+import { Equipamento, StatusEquipamento } from './entities/equipamento.entity.js';
 import { Emprestimo } from '../emprestimos/entities/emprestimo.entity.js';
 
 // Dublê do repositório: imita o banco sem precisar de um banco de verdade.
@@ -18,14 +18,19 @@ function criarRepositorioFalso() {
   };
 }
 
-const notebook: Equipamento = {
-  id: 1,
-  tipo: 'Notebook',
-  marca: 'Dell',
-  modelo: 'Latitude 5440',
-  numeroSerie: 'ABC123',
-  status: 'disponivel',
-};
+// Cria um notebook novo a cada chamada, para um teste nunca alterar o objeto de outro.
+function criarNotebook(status: StatusEquipamento = 'disponivel'): Equipamento {
+  return {
+    id: 1,
+    tipo: 'Notebook',
+    marca: 'Dell',
+    modelo: 'Latitude 5440',
+    numeroSerie: 'ABC123',
+    status,
+  };
+}
+
+const notebook = criarNotebook();
 
 describe('EquipamentosService', () => {
   let service: EquipamentosService;
@@ -99,16 +104,16 @@ describe('EquipamentosService', () => {
 
   describe('update', () => {
     it('altera só os campos enviados', async () => {
-      repositorio.findOneBy.mockResolvedValue({ ...notebook });
+      repositorio.findOneBy.mockResolvedValue(criarNotebook());
 
       const resultado = await service.update(1, { status: 'manutencao' });
 
-      expect(resultado).toEqual({ ...notebook, status: 'manutencao' });
+      expect(resultado).toEqual(criarNotebook('manutencao'));
       expect(repositorio.existsBy).not.toHaveBeenCalled();
     });
 
     it('recusa trocar para um número de série que já existe', async () => {
-      repositorio.findOneBy.mockResolvedValue({ ...notebook });
+      repositorio.findOneBy.mockResolvedValue(criarNotebook());
       repositorio.existsBy.mockResolvedValue(true);
 
       await expect(service.update(1, { numeroSerie: 'XYZ789' })).rejects.toThrow(ConflictException);
@@ -116,7 +121,7 @@ describe('EquipamentosService', () => {
     });
 
     it('recusa mudar o status de um equipamento emprestado', async () => {
-      repositorio.findOneBy.mockResolvedValue({ ...notebook, status: 'emprestado' });
+      repositorio.findOneBy.mockResolvedValue(criarNotebook('emprestado'));
 
       await expect(service.update(1, { status: 'disponivel' })).rejects.toThrow(ConflictException);
       expect(repositorio.save).not.toHaveBeenCalled();

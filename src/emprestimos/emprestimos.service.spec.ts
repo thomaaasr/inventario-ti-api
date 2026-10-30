@@ -2,7 +2,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Equipamento } from '../equipamentos/entities/equipamento.entity.js';
+import { Equipamento, StatusEquipamento } from '../equipamentos/entities/equipamento.entity.js';
 import { EmprestimosService } from './emprestimos.service.js';
 import { Emprestimo } from './entities/emprestimo.entity.js';
 
@@ -15,8 +15,8 @@ function criarManagerFalso() {
   };
 }
 
-function criarNotebook(): Equipamento {
-  return { id: 1, tipo: 'Notebook', marca: 'Dell', modelo: 'Latitude 5440', numeroSerie: 'ABC123', status: 'disponivel' };
+function criarNotebook(status: StatusEquipamento = 'disponivel'): Equipamento {
+    return { id: 1, tipo: 'Notebook', marca: 'Dell', modelo: 'Latitude 5440', numeroSerie: 'ABC123', status, };
 }
 
 describe('EmprestimosService', () => {
@@ -60,7 +60,7 @@ describe('EmprestimosService', () => {
     });
 
     it('recusa emprestar um equipamento que não está disponível', async () => {
-      manager.findOneBy.mockResolvedValue({ ...criarNotebook(), status: 'manutencao' });
+      manager.findOneBy.mockResolvedValue(criarNotebook('manutencao'));
 
       await expect(service.emprestar({ equipamentoId: 1, responsavel: 'Maria Souza' })).rejects.toThrow(
         ConflictException,
@@ -75,7 +75,7 @@ describe('EmprestimosService', () => {
         id: 1,
         responsavel: 'Maria Souza',
         dataDevolucao: null,
-        equipamento: { ...criarNotebook(), status: 'emprestado' },
+        equipamento: criarNotebook('emprestado'),
       };
       manager.findOneBy.mockResolvedValue(emprestimo);
 
