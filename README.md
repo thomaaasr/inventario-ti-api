@@ -25,6 +25,7 @@ Para cadastrar, editar ou emprestar, crie um usuário em `POST /auth/registro`, 
 - Empréstimo e mudança de status são gravados numa **transação**: ou os dois, ou nenhum
 - Consultar é livre; cadastrar, editar, excluir, emprestar e devolver exigem login (token JWT)
 - Senhas são guardadas apenas como hash (bcrypt), nunca em texto puro
+- A listagem de equipamentos devolve no máximo 50 itens por página (10 por padrão)
 
 ## Funcionalidades
 
@@ -35,6 +36,7 @@ Para cadastrar, editar ou emprestar, crie um usuário em `POST /auth/registro`, 
 - [x] Empréstimos: quem está com cada equipamento e o histórico de devoluções
 - [x] Migrações de banco de dados e testes de ponta a ponta (e2e)
 - [x] Autenticação com JWT: registro, login e rotas protegidas
+- [x] Listagem de equipamentos com filtros (status e tipo) e paginação
 
 ## Como rodar
 

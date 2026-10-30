@@ -11,6 +11,7 @@ function criarRepositorioFalso() {
     create: vi.fn((dados) => ({ ...dados })),
     save: vi.fn(async (equipamento) => ({ id: 1, status: 'disponivel', ...equipamento })),
     find: vi.fn(),
+    findAndCount: vi.fn(),
     findOneBy: vi.fn(),
     existsBy: vi.fn(),
     remove: vi.fn(),
@@ -63,6 +64,22 @@ describe('EquipamentosService', () => {
         service.create({ tipo: 'Monitor', marca: 'LG', modelo: '24MK430', numeroSerie: 'ABC123' }),
       ).rejects.toThrow(ConflictException);
       expect(repositorio.save).not.toHaveBeenCalled();
+    });
+  });
+
+    describe('findAll', () => {
+    it('busca só a página pedida, com os filtros enviados', async () => {
+      repositorio.findAndCount.mockResolvedValue([[notebook], 11]);
+
+      const resultado = await service.findAll({ status: 'disponivel', pagina: 2, limite: 5 });
+
+      expect(repositorio.findAndCount).toHaveBeenCalledWith({
+        where: { status: 'disponivel' },
+        order: { id: 'ASC' },
+        skip: 5,
+        take: 5,
+      });
+      expect(resultado).toEqual({ itens: [notebook], total: 11, pagina: 2, limite: 5 });
     });
   });
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -14,6 +14,8 @@ import {
 import { Publico } from '../auth/publico.decorator.js';
 import { EquipamentosService } from './equipamentos.service.js';
 import { CreateEquipamentoDto } from './dto/create-equipamento.dto.js';
+import { ListarEquipamentosDto } from './dto/listar-equipamentos.dto.js';
+import { PaginaEquipamentosDto } from './dto/pagina-equipamentos.dto.js';
 import { UpdateEquipamentoDto } from './dto/update-equipamento.dto.js';
 import { Equipamento } from './entities/equipamento.entity.js';
 
@@ -35,10 +37,11 @@ export class EquipamentosController {
 
   @Publico()
   @Get()
-  @ApiOperation({ summary: 'Lista todos os equipamentos' })
-  @ApiOkResponse({ type: [Equipamento] })
-  findAll() {
-    return this.equipamentosService.findAll();
+  @ApiOperation({ summary: 'Lista os equipamentos, com filtros e paginação' })
+  @ApiOkResponse({ type: PaginaEquipamentosDto })
+  @ApiBadRequestResponse({ description: 'Filtro ou paginação inválidos' })
+  findAll(@Query() filtros: ListarEquipamentosDto) {
+    return this.equipamentosService.findAll(filtros);
   }
 
   @Publico()

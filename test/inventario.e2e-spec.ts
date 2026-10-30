@@ -1,8 +1,9 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from '../src/app.module.js';
+import { configurarApp } from '../src/configurar-app.js';
 
 describe('Inventário (e2e)', () => {
   let app: INestApplication<App>;
@@ -11,7 +12,7 @@ describe('Inventário (e2e)', () => {
   beforeEach(async () => {
     const modulo = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = modulo.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    configurarApp(app);
     await app.init();
 
     // Cada teste começa com um usuário cadastrado e logado.
@@ -74,6 +75,43 @@ describe('Inventário (e2e)', () => {
       .expect(200);
     const equipamento = await request(servidor).get('/equipamentos/1').expect(200);
     expect(equipamento.body.status).toBe('disponivel');
+  });
+
+    describe('listagem', () => {
+    async function cadastrar(numeroSerie: string, tipo = 'Notebook') {
+      await request(app.getHttpServer())
+        .post('/equipamentos')
+        .auth(token, { type: 'bearer' })
+        .send({ ...notebook, tipo, numeroSerie })
+        .expect(201);
+    }
+
+    it('divide os equipamentos em páginas', async () => {
+      for (const numeroSerie of ['S1', 'S2', 'S3']) {
+        await cadastrar(numeroSerie);
+      }
+
+      const resposta = await request(app.getHttpServer()).get('/equipamentos?pagina=2&limite=2').expect(200);
+
+      expect(resposta.body.total).toBe(3);
+      expect(resposta.body.itens.map((e: { numeroSerie: string }) => e.numeroSerie)).toEqual(['S3']);
+    });
+
+    it('filtra por tipo', async () => {
+      await cadastrar('N1');
+      await cadastrar('M1', 'Monitor');
+
+      const resposta = await request(app.getHttpServer()).get('/equipamentos?tipo=Monitor').expect(200);
+
+      expect(resposta.body.total).toBe(1);
+      expect(resposta.body.itens[0].numeroSerie).toBe('M1');
+    });
+
+    it('recusa paginação inválida com 400', async () => {
+      await request(app.getHttpServer()).get('/equipamentos?limite=500').expect(400);
+      await request(app.getHttpServer()).get('/equipamentos?pagina=abc').expect(400);
+      await request(app.getHttpServer()).get('/equipamentos?status=quebrado').expect(400);
+    });
   });
 
   describe('autenticação', () => {

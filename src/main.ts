@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs';
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
+import { configurarApp } from './configurar-app.js';
 
 async function bootstrap() {
   // Em desenvolvimento, as configurações secretas ficam no arquivo .env (fora do Git).
@@ -12,8 +12,8 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
-
+  configurarApp(app);
+  
   const config = new DocumentBuilder()
     .setTitle('Inventário de TI')
     .setDescription('API para controlar os equipamentos de TI: o que existe e com quem está.')

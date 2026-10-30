@@ -1,7 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateEquipamentoDto } from './dto/create-equipamento.dto.js';
+import { ListarEquipamentosDto } from './dto/listar-equipamentos.dto.js';
+import { PaginaEquipamentosDto } from './dto/pagina-equipamentos.dto.js';
 import { UpdateEquipamentoDto } from './dto/update-equipamento.dto.js';
 import { Equipamento } from './entities/equipamento.entity.js';
 import { Emprestimo } from '../emprestimos/entities/emprestimo.entity.js';
@@ -21,10 +23,25 @@ export class EquipamentosService {
     return this.equipamentos.save(equipamento);
   }
 
-  findAll(): Promise<Equipamento[]> {
-    return this.equipamentos.find();
-  }
+  async findAll({ status, tipo, pagina, limite }: ListarEquipamentosDto): Promise<PaginaEquipamentosDto> {
+    // Só entram no filtro os campos enviados: o TypeORM recusa valores undefined no where.
+    const filtro: FindOptionsWhere<Equipamento> = {};
+    if (status) {
+      filtro.status = status;
+    }
+    if (tipo) {
+      filtro.tipo = tipo;
+    }
 
+    const [itens, total] = await this.equipamentos.findAndCount({
+      where: filtro,
+      order: { id: 'ASC' },
+      skip: (pagina - 1) * limite,
+      take: limite,
+    });
+    return { itens, total, pagina, limite };
+  }
+  
   async findOne(id: number): Promise<Equipamento> {
     const equipamento = await this.equipamentos.findOneBy({ id });
     if (!equipamento) {
