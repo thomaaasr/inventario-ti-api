@@ -5,6 +5,9 @@
 API REST para controlar os equipamentos de TI de uma empresa: o que existe, com quem
 está e o histórico de empréstimos. Construída com **NestJS 12** e **TypeScript**.
 
+Tem também uma **interface web** em React: [inventario-ti-web](https://github.com/thomaaasr/inventario-ti-web)
+([demonstração online](https://inventario-ti-web-s2mz.onrender.com)).
+
 ## Demonstração online
 
 Teste a API pelo navegador: **[inventario-ti-api-car8.onrender.com/docs](https://inventario-ti-api-car8.onrender.com/docs)**
