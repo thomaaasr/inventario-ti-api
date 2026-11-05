@@ -56,6 +56,19 @@ A API sobe em `http://localhost:3000`.
 A documentação interativa (Swagger) fica em `http://localhost:3000/docs`: lá dá para
 ver todas as rotas, exemplos e erros possíveis, e testar cada uma pelo navegador.
 
+## Rodando com Docker
+
+Sem instalar Node nem PostgreSQL: só com o [Docker](https://www.docker.com/products/docker-desktop/),
+um comando sobe a API e um banco PostgreSQL já configurados.
+
+```bash
+docker compose up --build
+```
+
+A API sobe em `http://localhost:3000` (Swagger em `/docs`). Os dados ficam guardados num volume
+do Docker e continuam lá entre uma execução e outra. Para parar: `Ctrl+C` ou `docker compose down`
+(e `docker compose down -v` para apagar também os dados).
+
 ## Testes
 
 ```bash
@@ -86,4 +99,4 @@ npm run migration:revert
 
 ## Tecnologias
 
-`TypeScript` `Node.js` `NestJS` `TypeORM` `PostgreSQL` `Vitest` `Swagger` `JWT`
+`TypeScript` `Node.js` `NestJS` `TypeORM` `PostgreSQL` `Vitest` `Swagger` `JWT` `Docker`

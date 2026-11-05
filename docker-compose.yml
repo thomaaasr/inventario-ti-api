@@ -1,0 +1,31 @@
+# Sobe a API e um PostgreSQL juntos: docker compose up --build
+services:
+  banco:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventario
+    volumes:
+      # Os dados ficam num volume: sobrevivem quando os containers são recriados.
+      - dados-banco:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      # "banco" é o nome do serviço acima: dentro do Compose, os containers se acham pelo nome.
+      DATABASE_URL: postgres://postgres:postgres@banco:5432/inventario
+      JWT_SECRET: ${JWT_SECRET:-segredo-apenas-para-rodar-localmente}
+    depends_on:
+      banco:
+        condition: service_healthy
+
+volumes:
+  dados-banco:
