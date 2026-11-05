@@ -8,6 +8,26 @@ on:
 jobs:
   testes:
     runs-on: ubuntu-latest
+
+    # PostgreSQL temporário para os testes e2e; o GitHub liga antes dos testes e descarta no final.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: inventario_teste
+        ports:
+          - 5432:5432
+        # Só começa os testes quando o banco estiver pronto para receber conexões.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL_TESTE: postgres://postgres:postgres@localhost:5432/inventario_teste
+
     steps:
       - uses: actions/checkout@v5
 

@@ -13,8 +13,7 @@ Tem também uma **interface web** em React: [inventario-ti-web](https://github.c
 Teste a API pelo navegador: **[inventario-ti-api-car8.onrender.com/docs](https://inventario-ti-api-car8.onrender.com/docs)**
 
 > Hospedada no plano gratuito do Render: depois de 15 minutos sem uso a API "dorme", e o
-> primeiro acesso pode levar cerca de 1 minuto. Os dados são de demonstração e são apagados
-> a cada reinício.
+> primeiro acesso pode levar cerca de 1 minuto. Os dados são de demonstração e ficam guardados num banco PostgreSQL.
 
 Para cadastrar, editar ou emprestar, crie um usuário em `POST /auth/registro`, faça login em
 `POST /auth/login` e cole o `accessToken` no botão **Authorize** do Swagger. As consultas são abertas.
@@ -43,11 +42,12 @@ Para cadastrar, editar ou emprestar, crie um usuário em `POST /auth/registro`, 
 
 ## Como rodar
 
-Pré-requisito: [Node.js](https://nodejs.org) 24.15 ou superior.
+Pré-requisitos: [Node.js](https://nodejs.org) 24.15 ou superior e [PostgreSQL](https://www.postgresql.org/download/) 17,
+com dois bancos criados: `inventario` (desenvolvimento) e `inventario_teste` (testes e2e).
 
 ```bash
 npm install
-cp .env.example .env   # depois troque o JWT_SECRET por um texto longo e aleatório
+cp .env.example .env   # depois preencha a senha do PostgreSQL e troque o JWT_SECRET
 npm run start:dev
 ```
 
@@ -60,20 +60,22 @@ ver todas as rotas, exemplos e erros possíveis, e testar cada uma pelo navegado
 
 ```bash
 npm test           # testes unitários: cada service isolado, com o banco simulado
-npm run test:e2e   # testes de ponta a ponta: a API inteira, com um banco em memória
+npm run test:e2e   # testes de ponta a ponta: a API inteira, num banco PostgreSQL de teste
 ```
 
 ## Banco de dados
 
-O banco (SQLite) fica em `data/inventario.sqlite` e é criado na primeira vez que a API sobe.
+O banco é o **PostgreSQL**, e o endereço de conexão vem da variável `DATABASE_URL` (veja o `.env.example`).
 As tabelas são criadas e alteradas por **migrações** (`src/database/migrations`), aplicadas
-automaticamente ao iniciar a API.
+automaticamente ao iniciar a API. Os testes e2e usam um banco separado (`DATABASE_URL_TESTE`),
+que é apagado e recriado a cada teste.
 
 Depois de alterar uma entity, gere a migração com as diferenças e confira o arquivo gerado:
 
 ```bash
 npm run migration:generate -- src/database/migrations/NomeDaMudanca
 ```
+
 Em seguida, registre a migração nova na lista `migrations` de `src/database/data-source.ts`.
 
 Para desfazer a última migração aplicada:
@@ -84,4 +86,4 @@ npm run migration:revert
 
 ## Tecnologias
 
-`TypeScript` `Node.js` `NestJS` `TypeORM` `SQLite` `Vitest` `Swagger` `JWT`
+`TypeScript` `Node.js` `NestJS` `TypeORM` `PostgreSQL` `Vitest` `Swagger` `JWT`
