@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { DataSource } from 'typeorm';
 import { App } from 'supertest/types.js';
 import { AppModule } from '../src/app.module.js';
 import { configurarApp } from '../src/configurar-app.js';
@@ -10,10 +11,20 @@ describe('Inventário (e2e)', () => {
   let token: string;
 
   beforeEach(async () => {
+    // Trava de segurança: os testes apagam o banco, então só rodam num banco de teste.
+    if (!process.env.DATABASE_URL?.includes('teste')) {
+      throw new Error('Os testes e2e apagam o banco: configure DATABASE_URL_TESTE com um banco de teste.');
+    }
+
     const modulo = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = modulo.createNestApplication();
     configurarApp(app);
     await app.init();
+
+    // Começa cada teste com o banco vazio: apaga todas as tabelas e recria pelas migrações.
+    const banco = app.get(DataSource);
+    await banco.dropDatabase();
+    await banco.runMigrations();
 
     // Cada teste começa com um usuário cadastrado e logado.
     const credenciais = { email: 'maria@exemplo.com', senha: 'senha-forte-123' };

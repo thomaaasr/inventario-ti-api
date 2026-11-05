@@ -17,7 +17,7 @@ export class Emprestimo {
   responsavel: string;
 
   @ApiProperty({ example: '2026-10-26T14:00:00.000Z' })
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   dataEmprestimo: Date;
 
   @ApiProperty({
@@ -26,6 +26,6 @@ export class Emprestimo {
     nullable: true,
     description: 'Vazio enquanto o equipamento não for devolvido',
   })
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   dataDevolucao: Date | null;
 }
